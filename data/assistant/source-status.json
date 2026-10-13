@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-13",
+  "method": "本机 Invoke-WebRequest，各 1 次，超时 12 秒。不是新的统计快照。",
+  "sources": [
+    {
+      "name": "万象棋大数据页面",
+      "url": "https://www.datawxq.com/",
+      "result": "HTTP 200，返回前端 HTML。页面本身不是统计表。"
+    },
+    {
+      "name": "datatft 英雄榜",
+      "url": "https://api.datatft.com/wzwxq/rankings/heroes?time=7&version=v1",
+      "result": "HTTP 200 且 code=1。响应基线 count=1137509、avgPlacement=3.4996、firstRate=0.1667、top3Rate=0.5001，首条英雄样本 394864。与仓库 2026-10-12 快照的装备榜样本和太乙真人样本一致。不能证明 10 月 13 日已经写入新对局，也没有把这次响应覆盖进 meta 目录。"
+    },
+    {
+      "name": "Wiki 阵容",
+      "url": "https://hokace.wiki/zh/lineups/",
+      "result": "HTTP 200，Astro HTML。未解析阵容正文，未当作统计源。"
+    },
+    {
+      "name": "游戏官网",
+      "url": "https://wxq.qq.com/",
+      "result": "HTTP 200，官网 HTML。这次没有打开具体公告，游戏版本号仍待核验。"
+    },
+    {
+      "name": "WXHub",
+      "url": "https://wxq.whatsyour.fun/",
+      "result": "12 秒超时，本次不可用。"
+    },
+    {
+      "name": "操作手册参考页",
+      "url": "https://whatsyour.fun/playbooks/ali_zhadunyao",
+      "result": "HTTP 200。只确认页面能打开。没有复制其攻略正文。"
+    },
+    {
+      "name": "王者营地",
+      "url": "",
+      "result": "没有找到官方公开、且明确覆盖《王者万象棋》对局的稳定导入接口。王者营地相关第三方项目针对的是王者荣耀战绩，且有加密失效的公开说明。本版本不做自动导入。"
+    }
+  ]
+}

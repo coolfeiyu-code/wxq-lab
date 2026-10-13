@@ -18,6 +18,8 @@
     ],
     "skipLibCheck": true,
     "noEmit": true,
+    "baseUrl": ".",
+    "paths": { "@core": ["../scripts/lib/assistant-core.d.ts"] },
     "types": [
       "vite/client",
       "node"

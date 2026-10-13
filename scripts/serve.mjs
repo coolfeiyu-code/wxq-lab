@@ -6,17 +6,51 @@
  * /__/meta-dirs → 可用数据快照日期列表
  */
 import http from 'node:http';
-import { createReadStream, existsSync, statSync, readdirSync } from 'node:fs';
+import { createReadStream, existsSync, readFileSync, statSync, readdirSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runUpdate, readUpdateLog, isUpdating, buildCoachContext } from './update-service.mjs';
+import {
+  resolveUserDataDir, statusOf, readMatches, saveMatch, deleteMatch,
+  importMatches, makeBackup, release,
+} from './assistant-store.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const DIST = path.join(ROOT, 'dist');
+const DIST = process.env.WXQ_DIST ? path.resolve(process.env.WXQ_DIST) : path.join(ROOT, 'dist');
 const APP = path.join(ROOT, 'app');   // 旧版原型回退
-const DATA = path.join(ROOT, 'data');
+const DATA = process.env.WXQ_DATA ? path.resolve(process.env.WXQ_DATA) : path.join(ROOT, 'data');
+const USER_DATA = resolveUserDataDir(ROOT);
 const PORT = process.env.PORT || 5177;
+const VERSION = existsSync(path.join(ROOT, 'VERSION'))
+  ? readFileSync(path.join(ROOT, 'VERSION'), 'utf8').trim()
+  : '0.0.0';
+
+function sendJson(res, code, body) {
+  res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' });
+  res.end(JSON.stringify(body));
+}
+
+function readBody(req, limit = 2_000_000) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > limit) {
+        reject(Object.assign(new Error('请求体过大'), { code: 'LIMIT' }));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => {
+      try { resolve(JSON.parse(Buffer.concat(chunks).toString() || '{}')); }
+      catch (err) { reject(err); }
+    });
+    req.on('error', reject);
+  });
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -28,6 +62,55 @@ const MIME = {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const p = decodeURIComponent(url.pathname);
+
+  if (p === '/version.json') {
+    return sendJson(res, 200, { version: VERSION, name: 'wxq-lab' });
+  }
+
+  if (p === '/api/assistant/status') {
+    try { return sendJson(res, 200, { ...(await statusOf(USER_DATA)), version: VERSION }); }
+    catch (err) { return sendJson(res, 500, { error: String(err.message || err) }); }
+  }
+  if (p === '/api/assistant/matches' && req.method === 'GET') {
+    try { return sendJson(res, 200, await readMatches(USER_DATA)); }
+    catch (err) { return sendJson(res, 500, { error: String(err.message || err) }); }
+  }
+  if (p === '/api/assistant/matches' && req.method === 'PUT') {
+    try {
+      const body = await readBody(req);
+      return sendJson(res, 200, await saveMatch(USER_DATA, body));
+    } catch (err) {
+      const code = err.code === 'LOCKED' ? 409 : err.code === 'PLACEMENT' || err.code === 'ID' ? 400 : 500;
+      return sendJson(res, code, { error: String(err.message || err) });
+    }
+  }
+  if (p.startsWith('/api/assistant/matches/') && req.method === 'DELETE') {
+    try {
+      await deleteMatch(USER_DATA, p.slice('/api/assistant/matches/'.length));
+      return sendJson(res, 200, { ok: true });
+    } catch (err) {
+      const code = err.code === 'LOCKED' ? 409 : 500;
+      return sendJson(res, code, { error: String(err.message || err) });
+    }
+  }
+  if (p === '/api/assistant/import' && req.method === 'POST') {
+    try {
+      const body = await readBody(req);
+      const rows = Array.isArray(body) ? body : body.matches;
+      return sendJson(res, 200, await importMatches(USER_DATA, rows));
+    } catch (err) {
+      const code = err.code === 'LOCKED' ? 409 : 400;
+      return sendJson(res, code, { error: String(err.message || err) });
+    }
+  }
+  if (p === '/api/assistant/backup' && req.method === 'POST') {
+    try { return sendJson(res, 200, { file: await makeBackup(USER_DATA) }); }
+    catch (err) { return sendJson(res, 500, { error: String(err.message || err) }); }
+  }
+  if (p === '/api/assistant/export') {
+    try { return sendJson(res, 200, await readMatches(USER_DATA)); }
+    catch (err) { return sendJson(res, 500, { error: String(err.message || err) }); }
+  }
 
   if (p === '/__/meta-dirs') {
     const dirs = existsSync(DATA) && existsSync(path.join(DATA, 'meta'))
@@ -219,6 +302,16 @@ server.on('error', (err) => {
   }
   process.exit(1);
 });
+
+let shuttingDown = false;
+async function shutdown() {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  try { await release(USER_DATA); } catch { /* 锁不属于本进程时不用处理 */ }
+  server.close(() => process.exit(0));
+}
+process.on('SIGINT', () => { shutdown(); });
+process.on('SIGTERM', () => { shutdown(); });
 
 server.listen(PORT, () => {
   const mode = process.env.WXQ_MODE === 'dev' ? '数据服务' : 'wxq-lab';

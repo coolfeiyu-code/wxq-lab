@@ -9,11 +9,24 @@ import TierView from './views/TierView.vue';
 import FactionsView from './views/FactionsView.vue';
 import ExplorerView from './views/ExplorerView.vue';
 import CoachView from './views/CoachView.vue';
+import AssistView from './views/AssistView.vue';
+import PlaybookView from './views/PlaybookView.vue';
+import TrackView from './views/TrackView.vue';
+import StatsView from './views/StatsView.vue';
+import HealthView from './views/HealthView.vue';
+import OverlayView from './views/OverlayView.vue';
 
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: '/', redirect: '/meta' },
+    { path: '/assist', component: AssistView },
+    { path: '/playbooks', component: PlaybookView },
+    { path: '/playbooks/:id', component: PlaybookView },
+    { path: '/track', component: TrackView },
+    { path: '/stats', component: StatsView },
+    { path: '/health', component: HealthView },
+    { path: '/overlay', component: OverlayView, meta: { bare: true } },
     { path: '/coach', component: CoachView },
     { path: '/meta', component: MetaView },
     { path: '/explorer', component: ExplorerView },

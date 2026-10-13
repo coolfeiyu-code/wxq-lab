@@ -9,9 +9,15 @@ import type { Hero } from './types';
 const route = useRoute();
 const router = useRouter();
 const dataNote = ref('');
+const bare = computed(() => route.meta.bare === true);
+function navOn(to: string) {
+  if (to === '/assist') return ['/assist', '/playbooks', '/track', '/stats', '/health'].some((p) => route.path === p || route.path.startsWith(`${p}/`));
+  return route.path === to;
+}
 
 const groups: { sep?: boolean; items: { to: string; cn: string }[] }[] = [
   { items: [
+    { to: '/assist', cn: '实战' },
     { to: '/coach', cn: '教练' },
   ] },
   { sep: true, items: [
@@ -135,7 +141,10 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick));
 </script>
 
 <template>
-  <div class="topbar-wrap">
+  <div v-if="bare" class="overlay-app">
+    <RouterView />
+  </div>
+  <div v-else class="topbar-wrap">
     <div class="topbar">
       <RouterLink to="/meta" class="topbar-brand" style="text-decoration:none">
         <span class="badge">棋</span>
@@ -150,7 +159,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick));
           <span v-if="g.sep" class="sep" />
           <RouterLink
             v-for="n in g.items" :key="n.to" :to="n.to"
-            :class="{ on: route.path === n.to }"
+            :class="{ on: navOn(n.to) }"
           >{{ n.cn }}</RouterLink>
         </template>
       </nav>
@@ -178,7 +187,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick));
     </div>
   </div>
 
-  <main class="min-w-0">
+  <main v-if="!bare" class="min-w-0">
     <div class="mx-auto max-w-[1280px] px-6 pb-20 pt-2 md:px-9">
       <RouterView v-slot="{ Component }">
         <Transition name="route" mode="out-in">
@@ -189,7 +198,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick));
   </main>
 
   <!-- 数据更新结果 -->
-  <XModal :open="updateOpen" :title="updateError ? '更新失败' : updateResult ? '更新完成' : '正在更新数据…'" @close="updateOpen = false">
+  <XModal v-if="!bare" :open="updateOpen" :title="updateError ? '更新失败' : updateResult ? '更新完成' : '正在更新数据…'" @close="updateOpen = false">
     <div style="min-height:120px">
       <!-- 失败 -->
       <div v-if="updateError" class="upd-error">{{ updateError }}</div>

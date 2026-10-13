@@ -16,3 +16,11 @@ data/raw-database.json
 .claude/
 *.log
 .DS_Store
+
+# 个人战绩若被放到仓库内，不提交。正式位置在同步目录的「万象棋AI实战助手/user-data」。
+user-data/
+
+# 悬浮窗编译中间产物
+desktop/**/bin/
+desktop/**/obj/
+desktop/**/publish/

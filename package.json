@@ -1,8 +1,8 @@
 {
   "name": "wxq-lab",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "万象棋竞技研究助手：复盘解析 + 组合研究 + 每日数据",
+  "description": "万象棋 AI 实战助手：开局推荐、操作手册、手动追踪、复盘和战绩",
   "type": "module",
   "scripts": {
     "update": "bash scripts/update.sh",
@@ -10,7 +10,8 @@
     "dev": "cd ui && npm run dev",
     "build": "cd ui && npm run build",
     "ui": "node scripts/serve.mjs",
-    "shot": "node scripts/screenshot.mjs"
+    "shot": "node scripts/screenshot.mjs",
+    "test": "node --test scripts/lib/assistant-core.test.mjs scripts/lib/version.test.mjs scripts/assistant-store.test.mjs"
   },
   "dependencies": {
     "playwright-core": "^1.47.0"
