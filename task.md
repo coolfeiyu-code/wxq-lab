@@ -8,7 +8,7 @@
 - 当前开发状态：1.0.0 已能在本机使用。跨电脑和 GitHub Release 未完成。
 - 最后更新时间：2026-10-13
 - 当前 Git 分支：main
-- 当前工作区是否存在未提交修改：功能提交是 `5bd4a95`，推送失败记录是 `26bb7ce`。是否还有新的未提交修改，以 `git status` 为准。
+- 当前工作区是否存在未提交修改：源码已推到 origin/main，最新为 `323800c` 之后的推送状态补记。是否还有新的未提交修改，以 `git status` 为准。
 - GitHub 仓库地址：https://github.com/coolfeiyu-code/wxq-lab.git
 - 上游：https://github.com/zerozhh/wxq-lab.git 。本机没有可用的 `upstream/main` 对比，分叉差距未知。不要假定和上游一致。
 - 极空间同步目录：`C:\AI 云同步\`（Syncthing 文件夹，配置在 `%APPDATA%\zspace\13588849616\.config\folderstate.json`）
@@ -98,7 +98,7 @@
 - 最近变更：见 `CHANGELOG.md`
 - 构建：2026-10-13，`ui` 的 `npm run build` 成功；`dotnet publish` self-contained 成功，有 1 个 MSB3277 警告。
 - 本机启动：成品 exe 自测退出码 0；窗口内容用 PrintWindow 看到推荐页。
-- GitHub 发布状态：本地提交 `5bd4a95`。`git push origin main` 失败：`schannel: failed to receive handshake, SSL/TLS connection failed`。没有 GitHub Release。远程仍停在推送前的提交。
+- GitHub 发布状态：`main` 已推到 origin，范围 `4cb2fe1..323800c`。第一次推送曾因 schannel SSL 握手失败，2026-10-13 重试成功。没有 GitHub Release。成品 exe 不在 GitHub，在极空间目录。
 - 极空间成品：`C:\AI 云同步\万象棋AI实战助手` 已拷入 1.0.0 的网页、exe、数据和说明。另一台电脑未核对。
 
 ## 10. 极空间同步与目录规则
@@ -117,14 +117,14 @@
 - 测试是否通过：上述各项通过。Chrome 脚本结果是 `RESULT pass`。exe 自测退出码 0。
 - 生成了什么成品：`C:\AI 云同步\万象棋AI实战助手`，版本 1.0.0。
 - 是否更新同步目录：本机目录已更新。另一台未验证。
-- 是否发布 GitHub：本地已提交 `5bd4a95`。推送失败，错误是 schannel SSL 握手失败。没有 Release。
-- 尚存问题：右缘可能裁字；跨电脑未验证；忽略规则未在客户端里确认；上游差距未知；游戏版本未核验；GitHub 推送未成功。
-- 下一步先做什么：网络恢复后从 `5bd4a95` 推送 `main`。不要提交 `user-data`、密钥、`node_modules`、`dist`、悬浮窗 publish 目录。
+- 是否发布 GitHub：`main` 已推送，包含 `5bd4a95`、`26bb7ce`、`323800c`。没有 Release。
+- 尚存问题：右缘在更窄窗口里可能裁字；跨电脑未验证；忽略规则未在客户端里确认；上游差距未知；游戏版本未核验。
+- 下一步先做什么：等另一台电脑同步后打开悬浮窗，核对版本是 1.0.0。不要把个人战绩、密钥和编译产物提交进仓库。
 
 ## 12. 下一步执行指令
 
-1. 本地提交是 `5bd4a95`。先看 `git status`。若只有 `task.md` 的推送失败补记，可以再提交这一笔，也可以和推送一起处理。
-2. 执行 `git push origin main`。2026-10-13 的失败是 `schannel: failed to receive handshake, SSL/TLS connection failed`。成功前不要写成已发布。
-3. 不要创建带大体积 exe 的 GitHub Release，除非先决定成品只放极空间。当前成品渠道是同步目录。
+1. 源码已在 origin/main。先看 `git status`。不要提交 `data/.secrets.json`、`万象棋AI实战助手/user-data`、`desktop/WxqOverlay/publish`。
+2. 没有 GitHub Release。成品继续放在极空间目录，不要把自包含 exe 整包传到 Release，除非以后单独决定。
+3. 第一次推送的 schannel 错误已经用同一次 `git push origin main` 重试成功，不要再把它写成当前阻塞。
 4. 等另一台电脑同步后，双击 `启动悬浮窗.bat`，核对窗口标题和 `VERSION` 都是 1.0.0，并确认 `wxq-lab/.git` 没有被同步覆盖。
 5. 有新的 `code===1` 快照之后，先让手册显示待重核，再改手册内容。不要用单日数据写上分结论。
