@@ -8,7 +8,7 @@
 - 当前开发状态：1.0.0 已能在本机使用。跨电脑和 GitHub Release 未完成。
 - 最后更新时间：2026-10-13
 - 当前 Git 分支：main
-- 当前工作区是否存在未提交修改：1.0.0 源码已在本地提交 `5bd4a95`。本文件随后补了推送失败记录；若 `git status` 仍显示 `task.md` 被修改，说明这句补记还没再提交。
+- 当前工作区是否存在未提交修改：功能提交是 `5bd4a95`，推送失败记录是 `26bb7ce`。是否还有新的未提交修改，以 `git status` 为准。
 - GitHub 仓库地址：https://github.com/coolfeiyu-code/wxq-lab.git
 - 上游：https://github.com/zerozhh/wxq-lab.git 。本机没有可用的 `upstream/main` 对比，分叉差距未知。不要假定和上游一致。
 - 极空间同步目录：`C:\AI 云同步\`（Syncthing 文件夹，配置在 `%APPDATA%\zspace\13588849616\.config\folderstate.json`）
